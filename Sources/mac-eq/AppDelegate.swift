@@ -1,10 +1,12 @@
 import AppKit
 import Foundation
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     var audioManager: AudioManager?
     var eqManager: EQManager?
+    var valueLabels: [Int: NSTextField] = [:]
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("Application started")
@@ -66,8 +68,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             valueLabel.frame = NSRect(x: x - 15, y: startY - 25, width: 70, height: 20)
             valueLabel.alignment = .center
             valueLabel.font = NSFont.systemFont(ofSize: 10)
-            valueLabel.identifier = NSUserInterfaceItemIdentifier("value_\(index)")
             content.addSubview(valueLabel)
+            valueLabels[index] = valueLabel
         }
     }
 
@@ -76,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let gain = Float(sender.floatValue)
         eqManager?.setGain(for: band, gain: gain)
 
-        if let valueLabel = window.contentView?.viewWithIdentifier(NSUserInterfaceItemIdentifier("value_\(band)")) as? NSTextField {
+        if let valueLabel = valueLabels[band] {
             valueLabel.stringValue = String(format: "%.1f dB", gain)
         }
     }

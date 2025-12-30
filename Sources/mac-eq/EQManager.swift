@@ -41,40 +41,17 @@ class EQManager {
         guard let eqUnit = eqUnit else { return }
 
         for (index, frequency) in frequencies.enumerated() {
-            var band = UInt32(index)
-
-            let filterType: AUParameterID = 0
             let freq: Float = frequency
             let bw: Float = 1.0
             let gain: Float = 0.0
 
-            AudioUnitSetParameter(eqUnit,
-                AudioUnitPropertyID(kAUNBandEQParam_FilterType + UInt32(index)),
-                kAudioUnitScope_Global,
-                0,
-                filterType,
-                0)
+            let freqParam = AudioUnitPropertyID(kAUNBandEQParam_Frequency + UInt32(index))
+            let bwParam = AudioUnitPropertyID(kAUNBandEQParam_Bandwidth + UInt32(index))
+            let gainParam = AudioUnitPropertyID(kAUNBandEQParam_Gain + UInt32(index))
 
-            AudioUnitSetParameter(eqUnit,
-                AudioUnitPropertyID(kAUNBandEQParam_Frequency + UInt32(index)),
-                kAudioUnitScope_Global,
-                0,
-                freq,
-                0)
-
-            AudioUnitSetParameter(eqUnit,
-                AudioUnitPropertyID(kAUNBandEQParam_Bandwidth + UInt32(index)),
-                kAudioUnitScope_Global,
-                0,
-                bw,
-                0)
-
-            AudioUnitSetParameter(eqUnit,
-                AudioUnitPropertyID(kAUNBandEQParam_Gain + UInt32(index)),
-                kAudioUnitScope_Global,
-                0,
-                gain,
-                0)
+            AudioUnitSetParameter(eqUnit, freqParam, kAudioUnitScope_Global, 0, freq, 0)
+            AudioUnitSetParameter(eqUnit, bwParam, kAudioUnitScope_Global, 0, bw, 0)
+            AudioUnitSetParameter(eqUnit, gainParam, kAudioUnitScope_Global, 0, gain, 0)
         }
     }
 
