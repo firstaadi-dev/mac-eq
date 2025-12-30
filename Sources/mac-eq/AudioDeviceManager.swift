@@ -38,7 +38,7 @@ class AudioDeviceManager {
             return
         }
 
-        let deviceCount = Int(propertySize / MemoryLayout<AudioDeviceID>.size)
+        let deviceCount = Int(propertySize) / MemoryLayout<AudioDeviceID>.size
         var deviceIDs = [AudioDeviceID](repeating: 0, count: deviceCount)
 
         AudioObjectGetPropertyData(

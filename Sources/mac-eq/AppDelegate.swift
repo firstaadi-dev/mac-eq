@@ -202,7 +202,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         print("Application terminating")
         audioManager?.stop()
-        }
     }
 
     private func createDeviceSection() -> NSView {
@@ -213,7 +212,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         label.font = NSFont.systemFont(ofSize: 16, weight: .bold)
         container.addSubview(label)
 
-        guard let deviceManager = deviceManager else {
+        guard let deviceManager = self.deviceManager else {
             return container
         }
 
@@ -231,7 +230,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func deviceChanged(_ sender: NSPopUpButton) {
-        guard let deviceManager = deviceManager else { return }
+        guard let deviceManager = self.deviceManager else { return }
 
         let devices = deviceManager.getOutputDevices()
         let selectedIndex = sender.indexOfSelectedItem
@@ -240,3 +239,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             deviceManager.setCurrentOutputDevice(devices[selectedIndex].id)
         }
     }
+}
