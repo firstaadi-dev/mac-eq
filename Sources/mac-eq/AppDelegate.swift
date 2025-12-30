@@ -10,6 +10,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var appMonitor: AppMonitor?
     var appListView: NSScrollView?
     var appListContainer: NSStackView?
+    var deviceManager: AudioDeviceManager?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("Application started")
@@ -17,6 +18,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         audioManager = AudioManager()
         eqManager = audioManager?.getEQManager()
         appMonitor = AppMonitor()
+        deviceManager = AudioDeviceManager()
+
         appMonitor?.onAppsChanged = { [weak self] sessions in
             self?.updateAppList(sessions: sessions)
         }
@@ -51,6 +54,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let eqSection = createEQSection()
         stackView.addArrangedSubview(eqSection)
+
+        let deviceSection = createDeviceSection()
+        stackView.addArrangedSubview(deviceSection)
 
         let appsHeader = NSTextField(labelWithString: "Applications")
         appsHeader.font = NSFont.systemFont(ofSize: 18, weight: .bold)
@@ -196,5 +202,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         print("Application terminating")
         audioManager?.stop()
+        }
     }
-}
+
+    private func createDeviceSection() -> NSView {
+        let container = NSView(frame: NSRect(x: 0, y: 0, width: 740, height: 80))
+
+        let label = NSTextField(labelWithString: "Output Device")
+        label.frame = NSRect(x: 0, y: 50, width: 740, height: 30)
+        label.font = NSFont.systemFont(ofSize: 16, weight: .bold)
+        container.addSubview(label)
+
+        guard let deviceManager = deviceManager else {
+            return container
+        }
+
+        let devices = deviceManager.getOutputDevices()
+
+        let popup = NSPopUpButton(frame: NSRect(x: 0, y: 10, width: 740, height: 30))
+        for device in devices {
+            popup.addItem(withTitle: device.name)
+        }
+        popup.target = self
+        popup.action = #selector(deviceChanged(_:))
+        container.addSubview(popup)
+
+        return container
+    }
+
+    @objc private func deviceChanged(_ sender: NSPopUpButton) {
+        guard let deviceManager = deviceManager else { return }
+
+        let devices = deviceManager.getOutputDevices()
+        let selectedIndex = sender.indexOfSelectedItem
+
+        if selectedIndex >= 0 && selectedIndex < devices.count {
+            deviceManager.setCurrentOutputDevice(devices[selectedIndex].id)
+        }
+    }
