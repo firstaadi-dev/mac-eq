@@ -1,11 +1,18 @@
 import Foundation
 import Cocoa
 
-struct AppAudioSession {
+class AppAudioSession: NSObject {
     let bundleId: String
     let appName: String
-    let volume: Float
-    let eqEnabled: Bool
+    var volume: Float
+    var eqEnabled: Bool
+
+    init(bundleId: String, appName: String, volume: Float, eqEnabled: Bool) {
+        self.bundleId = bundleId
+        self.appName = appName
+        self.volume = volume
+        self.eqEnabled = eqEnabled
+    }
 }
 
 class AppMonitor {
